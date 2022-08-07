@@ -7,7 +7,7 @@ const port = 5000;
 const _dirname = "/http-course/http-course/files";
 
 const requestListener = (req, res) => {
-  if (req.url === "/test") {
+  if (req.url === "/test" && req.method === "GET") {
     const files = fs.readdirSync(_dirname);
     let fileNames = "";
     files.forEach((file) => {
@@ -17,6 +17,7 @@ const requestListener = (req, res) => {
     res.end(fileNames);
     return;
   }
+
   res.writeHead(404);
   res.end("Knigga not Found! ");
 };
