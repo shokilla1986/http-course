@@ -1,12 +1,21 @@
 const http = require("http");
+const fs = require("fs");
 
 const host = "localhost";
 const port = 5000;
 
+const _dirname = "/http-course/http-course/files";
+
 const requestListener = (req, res) => {
   if (req.url === "/test") {
-    res.writeHead(200);
-    res.end("Hello, Knigga Test! ");
+    const files = fs.readdirSync(_dirname);
+    let fileNames = "";
+    files.forEach((file) => {
+      fileNames += `${file}, `;
+    });
+    res.writeHead(200, "Ok!", { "Content-type": "text/html" });
+    res.end(fileNames);
+    return;
   }
   res.writeHead(404);
   res.end("Knigga not Found! ");
