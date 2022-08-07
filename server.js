@@ -55,6 +55,12 @@ const requestListener = (req, res) => {
     return;
   }
 
+  if (req.url === "/redirect" && req.method === "GET") {
+    res.writeHead(301);
+    res.end("Сервис переехал на новый адрес http://localhost:5000/redirected");
+    return;
+  }
+
   res.writeHead(404);
   res.end("Knigga not Found! ");
 };
