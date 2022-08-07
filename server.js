@@ -18,6 +18,12 @@ const requestListener = (req, res) => {
     return;
   }
 
+  if (req.url === "/test" && req.method !== "GET") {
+    res.writeHead(405);
+    res.end("HTTP method not allowed");
+    return;
+  }
+
   res.writeHead(404);
   res.end("Knigga not Found! ");
 };
