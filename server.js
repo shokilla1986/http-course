@@ -8,14 +8,20 @@ const _dirname = "/http-course/http-course/files";
 
 const requestListener = (req, res) => {
   if (req.url === "/test" && req.method === "GET") {
-    const files = fs.readdirSync(_dirname);
-    let fileNames = "";
-    files.forEach((file) => {
-      fileNames += `${file}, `;
-    });
-    res.writeHead(200, "Ok!", { "Content-type": "text/html" });
-    res.end(fileNames);
-    return;
+    try {
+      const files = fs.readdirSync(_dirname);
+      let fileNames = "";
+      files.forEach((file) => {
+        fileNames += `${file}, `;
+      });
+      res.writeHead(200, "Ok!", { "Content-type": "text/html" });
+      res.end(fileNames);
+      return;
+    } catch (error) {
+      res.writeHead(500, "Ok!", { "Content-type": "text/html" });
+      res.end("Internal server error");
+      return;
+    }
   }
 
   if (req.url === "/test" && req.method !== "GET") {
