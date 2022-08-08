@@ -1,14 +1,15 @@
 const http = require("http");
 const fs = require("fs");
+const path = require("path");
 
 const host = "localhost";
 const port = 5000;
 
-const _dirname = "/http-course/http-course/files";
+const _dirname = "/http-course/http-course";
 
 const getHundler = (req, res) => {
   try {
-    const files = fs.readdirSync(_dirname);
+    const files = fs.readdirSync(_dirname + "/files", { encoding: "utf-8" });
     let fileNames = "";
     files.forEach((file) => {
       fileNames += `${file}, `;
@@ -24,6 +25,18 @@ const getHundler = (req, res) => {
 };
 
 const requestListener = (req, res) => {
+  if (req.url === "/") {
+    res.writeHead(200);
+    res.end("Main page!");
+    return;
+  }
+
+  if (req.url === "/auth") {
+    res.writeHead(200, "OK!", { "Content-Type": "text/html; charset=utf-8" });
+    let readStream = fs.createReadStream(_dirname + "/authForm.html", "utf-8");
+    readStream.pipe(res);
+    return;
+  }
   if (req.url === "/get" && req.method === "GET") {
     return getHundler(req, res);
   }
