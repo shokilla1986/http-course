@@ -56,7 +56,7 @@ const requestListener = (req, res) => {
   }
 
   if (req.url === "/redirect" && req.method === "GET") {
-    res.writeHead(301);
+    res.writeHead(301, { Location: "/redirected" });
     res.end("Сервис переехал на новый адрес http://localhost:5000/redirected");
     return;
   }
