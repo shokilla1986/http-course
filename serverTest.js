@@ -32,19 +32,31 @@ const handlerServer = (req, res) => {
 
   if (req.url === "/auth" && req.method === "POST") {
     console.log("offer");
-    console.log(JSON.stringify(user));
-    res.writeHead(200, "OK!", {
-      "Content-Type": "application/json charset=utf-8",
+
+    let data = "";
+    req.on("data", (chunk) => {
+      data += chunk;
     });
 
-    res.end(JSON.stringify(user));
-    // let data = "";
-    // req.on("data", (chunk) => (data += chunk));
-    // console.log(data);
-    // req.on("end", () => {
-    //   res.end("!!!!");
-    // });
-    // console.log(req);
+    req.on("end", () => {
+      const { username, password } = JSON.parse(data);
+      console.log(username);
+      console.log(password);
+      if (username === user.username && password === user.password) {
+        res.writeHead(200, "Hello", {
+          "Set-Cookie":
+            "userId=123; expires=Thu, 10 Aug 2022 18:45:00 -0000; max_age=120",
+        });
+        res.end("Welcome");
+      } else {
+        res.writeHead(400, {
+          "Content-type": "text/html",
+        });
+        res.end("Неверный логин или пароль");
+      }
+    });
+
+    console.log("req post");
     return;
   }
   res.writeHead(404);

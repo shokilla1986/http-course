@@ -12,24 +12,26 @@
     <div>
         <h2>Авторизация</h2>
         <form action="#" method="post">
-            <input name="email" type="text" placeholder="введите email..." />
+            <input name="username" type="text" placeholder="введите username..." />
             <input name="password" type="text" placeholder="введите пароль..." />
           
             <input type="submit" />
         </form>
+        <p class="res_text"></p>
        
         <script>
-            let form = document.querySelector('form');      
+            let form = document.querySelector('form');     
+            let par = document.querySelector('.res_text') 
             
             let xhr = new XMLHttpRequest();
             let url = 'http://localhost:8000/auth'
 
             function handleSubmitForm(event){
                 event.preventDefault()
-                let email = form.email.value
+                let username = form.username.value
                 let password = form.password.value;
                 let user = {
-                    email: email,
+                    username: username,
                     password: password
                 }            
                              
@@ -39,7 +41,7 @@
                 xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
 
                 xhr.send(json)          
-                // return json!!!!
+                
             };                        
 
            
@@ -50,9 +52,9 @@
 
              xhr.onload = () => {
                     if (xhr.status == 200) {                // если код ответа 200
-                        console.log(xhr.responseText);      // выводим полученный ответ на консоль браузера
+                        par.innerHTML = xhr.responseText;      // выводим полученный ответ на консоль браузера
                     } else {                                // иначе выводим текст статуса
-                        console.log("Server response: ", xhr.statusText);
+                       par.innerHTML = xhr.responseText; 
                     }
                 }
         </script>
