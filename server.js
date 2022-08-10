@@ -3,9 +3,15 @@ const fs = require("fs");
 const path = require("path");
 
 const host = "localhost";
-const port = 5000;
+const port = 8000;
 
 const _dirname = "/http-course/http-course";
+
+const user = {
+  id: 123,
+  username: "testuser",
+  password: "qwerty",
+};
 
 const getHundler = (req, res) => {
   try {
@@ -25,49 +31,96 @@ const getHundler = (req, res) => {
   }
 };
 
-// function getAuth(data) {
-//   console.log(data);
-// }
-
-const requestListener = (req, res) => {
-  if (req.url === "/") {
-    res.writeHead(200);
-    res.end("Main page!");
-    return;
-  }
-
-  if (req.url === "/auth") {
+const handlerAuth = (req, res) => {
+  if (req.url === "/auth" && req.method === "GET") {
+    console.log("auth");
     res.writeHead(200, "OK!", { "Content-Type": "text/html; charset=utf-8" });
     let readStream = fs.createReadStream(_dirname + "/authForm.html", "utf-8");
     readStream.pipe(res);
     return;
   }
+
   if (req.url === "/auth" && req.method === "POST") {
-    // let data = "";
-    // req.on("data", (chunk) => (data += chunk));
-    // console.log(data);
-    // req.on("end", () => {
-    //   res.end(data);
-    // });
-    console.log(req);
+    console.log("offer");
+
+    let data = "";
+    req.on("data", (chunk) => {
+      data += chunk;
+    });
+
+    req.on("end", () => {
+      const { username, password } = JSON.parse(data);
+      console.log(username);
+      console.log(password);
+      if (username === user.username && password === user.password) {
+        res.writeHead(200, "Hello", {
+          "Set-Cookie":
+            "userId=123; expires=Thu, 10 Aug 2022 18:45:00 -0000; max_age=120",
+        });
+        res.end("Welcome");
+      } else {
+        res.writeHead(400, {
+          "Content-type": "text/html",
+        });
+        res.end("Неверный логин или пароль");
+      }
+    });
+
+    console.log("req post");
     return;
   }
+};
+
+const requestListener = (req, res) => {
+  if (req.url === "/") {
+    console.log("main");
+    res.writeHead(200);
+    res.end("Main page!");
+    return;
+  }
+
+  // if (req.url === "/auth") {
+  //   res.writeHead(200, "OK!", { "Content-Type": "text/html; charset=utf-8" });
+  //   let readStream = fs.createReadStream(_dirname + "/authForm.html", "utf-8");
+  //   readStream.pipe(res);
+  //   return;
+  // }
+  // if (req.url === "/auth" && req.method === "POST") {
+  //   // let data = "";
+  //   // req.on("data", (chunk) => (data += chunk));
+  //   // console.log(data);
+  //   // req.on("end", () => {
+  //   //   res.end(data);
+  //   // });
+  //   console.log(req);
+  //   return;
+  // }
+
   if (req.url === "/get" && req.method === "GET") {
     return getHundler(req, res);
   }
 
   if (req.url === "/get" && req.method !== "GET") {
+    console.log("HTTP method not allowed");
     res.writeHead(405);
     res.end("HTTP method not allowed");
     return;
   }
 
+  if (req.url === "/auth") {
+    console.log("auth");
+    return handlerAuth(req, res);
+  }
+
   if (req.url === "/delete" && req.method === "DELETE") {
+    console.log("main");
     res.writeHead(200);
+
     res.end("Success!");
     return;
   }
   if (req.url === "/delete" && req.method !== "DELETE") {
+    console.log("HTTP method not allowed");
     res.writeHead(405);
     res.end("HTTP method not allowed");
     return;
