@@ -1,19 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HTTP-course</title>
 </head>
+
 <body>
     <div>
         <h2>Авторизация</h2>
-    <form method="post">
-        <input type="email" placeholder="введите email..."/>
-        <input type="password" placeholder="введите пароль..." />
-        <button type="submit">Войти</button>
-    </form>
+        <form action="#" method="post">
+            <input name="email" type="text" placeholder="введите email..." />
+            <input name="password" type="text" placeholder="введите пароль..." />
+          
+            <input type="submit" />
+        </form>
+       
+        <script>
+            let form = document.querySelector('form');      
+            
+            let xhr = new XMLHttpRequest();
+            let url = 'http://localhost:5000/auth'
+
+            function handleSubmitForm(event){
+                event.preventDefault()
+                let email = form.email.value
+                let password = form.password.value;
+                let user = {
+                    email: email,
+                    password: password
+                }            
+                             
+                let json= JSON.stringify(user)
+                console.log(json);    
+                xhr.open("POST", url)
+                xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+                xhr.send(json)          
+                // return json!!!!
+            };                        
+
+           
+
+            form.addEventListener('submit', handleSubmitForm)
+
+                    
+
+             xhr.onload = () => {
+                    if (xhr.status == 200) {                // если код ответа 200
+                        console.log(xhr.responseText);      // выводим полученный ответ на консоль браузера
+                    } else {                                // иначе выводим текст статуса
+                        console.log("Server response: ", xhr.statusText);
+                    }
+                }
+        </script>
     </div>
 </body>
+
 </html>

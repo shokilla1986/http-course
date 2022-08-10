@@ -13,6 +13,7 @@ const getHundler = (req, res) => {
     let fileNames = "";
     files.forEach((file) => {
       fileNames += `${file}, `;
+      console.log(file);
     });
     res.writeHead(200, "Ok!", { "Content-type": "text/html" });
     res.end(fileNames);
@@ -23,6 +24,10 @@ const getHundler = (req, res) => {
     return;
   }
 };
+
+// function getAuth(data) {
+//   console.log(data);
+// }
 
 const requestListener = (req, res) => {
   if (req.url === "/") {
@@ -35,6 +40,16 @@ const requestListener = (req, res) => {
     res.writeHead(200, "OK!", { "Content-Type": "text/html; charset=utf-8" });
     let readStream = fs.createReadStream(_dirname + "/authForm.html", "utf-8");
     readStream.pipe(res);
+    return;
+  }
+  if (req.url === "/auth" && req.method === "POST") {
+    // let data = "";
+    // req.on("data", (chunk) => (data += chunk));
+    // console.log(data);
+    // req.on("end", () => {
+    //   res.end(data);
+    // });
+    console.log(req);
     return;
   }
   if (req.url === "/get" && req.method === "GET") {
@@ -64,6 +79,7 @@ const requestListener = (req, res) => {
   }
   if (req.url === "/post" && req.method !== "POST") {
     res.writeHead(405);
+    console.log("HTTP method not allowed");
     res.end("HTTP method not allowed");
     return;
   }
