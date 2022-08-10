@@ -74,6 +74,7 @@ const requestListener = (req, res) => {
   }
   if (req.url === "/post" && req.method === "POST") {
     res.writeHead(200);
+    console.log("post success!");
     res.end("Success!");
     return;
   }
