@@ -13,24 +13,34 @@ const user = {
   password: "qwerty",
 };
 
-const getHundler = (req, res) => {
-  try {
-    const files = fs.readdirSync(_dirname + "/files", { encoding: "utf-8" });
-    let fileNames = "";
-    files.forEach((file) => {
-      fileNames += `${file}, `;
-      console.log(file);
-    });
-    res.writeHead(200, "Ok!", { "Content-type": "text/html" });
-    res.end(fileNames);
-    return;
-  } catch (error) {
-    res.writeHead(500, "Ok!", { "Content-type": "text/html" });
-    res.end("Internal server error");
+//handler functions
+const handlerGetFiles = (req, res) => {
+  if (req.url === "/get" && req.method === "GET") {
+    try {
+      const files = fs.readdirSync(_dirname + "/files", { encoding: "utf-8" });
+      let fileNames = "";
+      files.forEach((file) => {
+        fileNames += `${file}, `;
+        console.log(file);
+      });
+      res.writeHead(200, "Ok!", { "Content-type": "text/html" });
+      res.end(fileNames);
+      return;
+    } catch (error) {
+      res.writeHead(500, "Ok!", { "Content-type": "text/html" });
+      res.end("Internal server error");
+      return;
+    }
+  }
+  if (req.url === "/get" && req.method !== "GET") {
+    console.log("HTTP method not allowed");
+    res.writeHead(405);
+    res.end("HTTP method not allowed");
     return;
   }
 };
 
+/////
 const handlerAuth = (req, res) => {
   if (req.url === "/auth" && req.method === "GET") {
     console.log("auth");
@@ -41,8 +51,6 @@ const handlerAuth = (req, res) => {
   }
 
   if (req.url === "/auth" && req.method === "POST") {
-    console.log("offer");
-
     let data = "";
     req.on("data", (chunk) => {
       data += chunk;
@@ -50,12 +58,12 @@ const handlerAuth = (req, res) => {
 
     req.on("end", () => {
       const { username, password } = JSON.parse(data);
-      console.log(username);
-      console.log(password);
       if (username === user.username && password === user.password) {
-        res.writeHead(200, "Hello", {
-          "Set-Cookie":
-            "userId=123; expires=Thu, 10 Aug 2022 18:45:00 -0000; max_age=120",
+        res.writeHead(200, "OK", {
+          "Set-Cookie": [
+            "userId=123; expires=Thu, 11 Aug 2022 18:45:00 -0000; max_age=120",
+            "authorized=true; expires=Thu, 11 Aug 2022 18:45:00 -0000; max_age=120",
+          ],
         });
         res.end("Welcome");
       } else {
@@ -66,11 +74,14 @@ const handlerAuth = (req, res) => {
       }
     });
 
-    console.log("req post");
     return;
   }
 };
 
+////
+function handlerPost() {}
+
+//server function
 const requestListener = (req, res) => {
   if (req.url === "/") {
     console.log("main");
@@ -79,32 +90,9 @@ const requestListener = (req, res) => {
     return;
   }
 
-  // if (req.url === "/auth") {
-  //   res.writeHead(200, "OK!", { "Content-Type": "text/html; charset=utf-8" });
-  //   let readStream = fs.createReadStream(_dirname + "/authForm.html", "utf-8");
-  //   readStream.pipe(res);
-  //   return;
-  // }
-  // if (req.url === "/auth" && req.method === "POST") {
-  //   // let data = "";
-  //   // req.on("data", (chunk) => (data += chunk));
-  //   // console.log(data);
-  //   // req.on("end", () => {
-  //   //   res.end(data);
-  //   // });
-  //   console.log(req);
-  //   return;
-  // }
-
-  if (req.url === "/get" && req.method === "GET") {
-    return getHundler(req, res);
-  }
-
-  if (req.url === "/get" && req.method !== "GET") {
-    console.log("HTTP method not allowed");
-    res.writeHead(405);
-    res.end("HTTP method not allowed");
-    return;
+  if (req.url === "/get") {
+    console.log("get");
+    return handlerGetFiles(req, res);
   }
 
   if (req.url === "/auth") {
@@ -126,12 +114,14 @@ const requestListener = (req, res) => {
     return;
   }
   if (req.url === "/post" && req.method === "POST") {
+    console.log("req.headers.cookie");
     res.writeHead(200);
     console.log("post success!");
     res.end("Success!");
     return;
   }
   if (req.url === "/post" && req.method !== "POST") {
+    console.log(req.headers);
     res.writeHead(405);
     console.log("HTTP method not allowed");
     res.end("HTTP method not allowed");
@@ -140,7 +130,7 @@ const requestListener = (req, res) => {
 
   if (req.url === "/redirect" && req.method === "GET") {
     res.writeHead(301, { Location: "/redirected" });
-    res.end("Сервис переехал на новый адрес http://localhost:5000/redirected");
+    res.end("Сервис переехал на новый адрес http://localhost:8000/redirected");
     return;
   }
 
