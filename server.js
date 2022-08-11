@@ -100,11 +100,14 @@ const requestListener = (req, res) => {
     return handlerAuth(req, res);
   }
 
-  if (req.url === "/delete" && req.method === "DELETE") {
-    console.log("main");
+  // if (req.url === "/delete" && req.method === "DELETE") {
+  if (req.url === "/delete") {
+    let cookie = req.headers;
+    console.log(cookie);
+    // console.log(userId);
     res.writeHead(200);
 
-    res.end("Success!");
+    res.end(cookie.cookie);
     return;
   }
   if (req.url === "/delete" && req.method !== "DELETE") {
