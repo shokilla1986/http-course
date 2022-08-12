@@ -20,7 +20,7 @@
 
             <input type="submit" />
         </form>
-        <p></p>
+        <p>{% get content %}</p>
     </div>
 
     <script>
@@ -46,10 +46,8 @@
                 },            
                 body: JSON.stringify(user)
             })  
-            .then(res => console.log(res.ok))          
-            .then(res =>{
-                p.innerHTML = "Ok"                   
-             })
+            // .then(res => res.json())          
+            .then(res => res.body)
         };
 
 

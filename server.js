@@ -9,7 +9,7 @@ const port = 8000;
 const _dirname = "/http-course/http-course";
 
 const user = {
-  id: 123,
+  id: "123",
   username: "testuser",
   password: "qwerty",
 };
@@ -88,27 +88,40 @@ function handlerPost(req, res, cookies) {
   }
 
   if (req.url === "/post" && req.method === "POST") {
-    // console.log(cookies.get("authorized"));
-    // console.log(cookies.get("userId"));
     let userId = cookies.get("userId");
     let authorized = cookies.get("authorized");
 
-    console.log(userId);
-    console.log(authorized);
-    let data = "";
-    req.on("data", (chunk) => {
-      data += chunk;
-    });
-    req.on("end", () => {
-      const { filename, content } = JSON.parse(data);
-      console.log(filename, content);
-      fs.writeFile(_dirname + "/files/" + filename + ".txt", content, (err) => {
-        if (err) console.log(err);
-        console.log(filename + " created");
+    if (user.id == userId && authorized == "true") {
+      console.log("userId:", userId);
+      console.log("authorized: ", authorized);
+      let data = "";
+      req.on("data", (chunk) => {
+        data += chunk;
       });
-      res.writeHead(200, "OK!");
+      req.on("end", () => {
+        const { filename, content } = JSON.parse(data);
+        console.log(filename, content);
+        fs.writeFile(
+          _dirname + "/files/" + filename + ".txt",
+          content,
+          (err) => {
+            if (err) console.log(err);
+            console.log(filename + " created");
+          }
+        );
+        res.writeHead(200, {
+          "Content-Type": "text/html; charset=utf-8",
+        });
+        res.write("OK!");
+        res.end();
+      });
+    } else {
+      res.writeHead(400, {
+        "Content-Type": "text/html; charset=utf-8",
+      });
+      res.write("You don't have cookies!");
       res.end();
-    });
+    }
   }
 }
 
@@ -123,34 +136,39 @@ function deleteHandler(req, res, cookies) {
     readStream.pipe(res);
     return;
   }
+
   if (req.url === "/delete" && req.method === "DELETE") {
-    // console.log(cookies.get("authorized"));
-    // console.log(cookies.get("userId"));
     let userId = cookies.get("userId");
     let authorized = cookies.get("authorized");
 
-    // console.log(userId);
-    // console.log(authorized);
-    let data = "";
-    req.on("data", (chunk) => {
-      data += chunk;
-    });
-    req.on("end", () => {
-      const filename = JSON.parse(data);
-      console.log("filename: ", filename);
-      try {
-        let file = fs.lstatSync(_dirname + "/files/" + filename + ".txt");
-        console.log("file: ", file);
-        fs.unlinkSync(_dirname + "/files/" + filename + ".txt");
-        console.log(filename + " deleted");
-        res.writeHead(200, "OK!");
-      } catch (error) {
-        console.log("it does not exist");
-        res.writeHead(400, "File not a found!");
-      }
+    if (user.id == userId && authorized == "true") {
+      let data = "";
+      req.on("data", (chunk) => {
+        data += chunk;
+      });
+      req.on("end", () => {
+        const filename = JSON.parse(data);
+        console.log("filename: ", filename);
+        try {
+          let file = fs.lstatSync(_dirname + "/files/" + filename + ".txt");
+          console.log("file: ", file);
+          fs.unlinkSync(_dirname + "/files/" + filename + ".txt");
+          console.log(filename + " deleted");
+          res.writeHead(200, "OK!");
+        } catch (error) {
+          console.log("it does not exist");
+          res.writeHead(400, "File not a found!");
+        }
 
+        res.end();
+      });
+    } else {
+      res.writeHead(400, {
+        "Content-Type": "text/html; charset=utf-8",
+      });
+      res.write("You don't have cookies!");
       res.end();
-    });
+    }
   }
 }
 //server function
