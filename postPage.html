@@ -13,9 +13,9 @@
 
     <div>
         <form action="#" method="post">
-            <input name="filename" type="content" placeholder="введите название файла..." />
+            <input name="filename" type="text" placeholder="введите название файла..." />
             <br />
-            <textarea name="text" type="textarea" placeholder="введите текст..."></textarea> />
+            <textarea name="content" type="textarea" placeholder="введите текст..."></textarea> />
             <br />
 
             <input type="submit" />
@@ -32,7 +32,7 @@
         async function handleSubmitFormPost(event) {
             event.preventDefault()
             let filename = form.filename.value
-            let text = form.content.value;
+            let content = form.content.value;
             let user = {
                 filename: filename,
                 content: content

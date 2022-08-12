@@ -15,6 +15,7 @@ const user = {
 };
 
 //handler functions
+//get handler
 const handlerGetFiles = (req, res) => {
   if (req.url === "/get" && req.method === "GET") {
     try {
@@ -41,10 +42,9 @@ const handlerGetFiles = (req, res) => {
   }
 };
 
-/////
+/////auth handler
 const handlerAuth = (req, res, cookies) => {
   if (req.url === "/auth" && req.method === "GET") {
-    console.log("auth");
     res.writeHead(200, "OK!", { "Content-Type": "text/html; charset=utf-8" });
     let readStream = fs.createReadStream(_dirname + "/authForm.html", "utf-8");
     readStream.pipe(res);
@@ -78,7 +78,7 @@ const handlerAuth = (req, res, cookies) => {
   }
 };
 
-////
+////post handler
 function handlerPost(req, res, cookies) {
   if (req.url === "/post" && req.method === "GET") {
     res.writeHead(200, "OK!", { "Content-Type": "text/html; charset=utf-8" });
@@ -112,6 +112,47 @@ function handlerPost(req, res, cookies) {
   }
 }
 
+//delete handler
+function deleteHandler(req, res, cookies) {
+  if (req.url === "/delete" && req.method === "GET") {
+    res.writeHead(200, "OK!", { "Content-Type": "text/html; charset=utf-8" });
+    let readStream = fs.createReadStream(
+      _dirname + "/deletePage.html",
+      "utf-8"
+    );
+    readStream.pipe(res);
+    return;
+  }
+  if (req.url === "/delete" && req.method === "DELETE") {
+    // console.log(cookies.get("authorized"));
+    // console.log(cookies.get("userId"));
+    let userId = cookies.get("userId");
+    let authorized = cookies.get("authorized");
+
+    // console.log(userId);
+    // console.log(authorized);
+    let data = "";
+    req.on("data", (chunk) => {
+      data += chunk;
+    });
+    req.on("end", () => {
+      const filename = JSON.parse(data);
+      console.log("filename: ", filename);
+      try {
+        let file = fs.lstatSync(_dirname + "/files/" + filename + ".txt");
+        console.log("file: ", file);
+        fs.unlinkSync(_dirname + "/files/" + filename + ".txt");
+        console.log(filename + " deleted");
+        res.writeHead(200, "OK!");
+      } catch (error) {
+        console.log("it does not exist");
+        res.writeHead(400, "File not a found!");
+      }
+
+      res.end();
+    });
+  }
+}
 //server function
 const requestListener = (req, res) => {
   //create new object cookies
@@ -141,18 +182,16 @@ const requestListener = (req, res) => {
     return handlerPost(req, res, cookies);
   }
 
-  // if (req.url === "/delete" && req.method === "DELETE") {
   if (req.url === "/delete") {
-    res.writeHead(200);
-    res.end();
-    return;
+    console.log("delete");
+    return deleteHandler(req, res, cookies);
   }
-  if (req.url === "/delete" && req.method !== "DELETE") {
-    console.log("HTTP method not allowed");
-    res.writeHead(405);
-    res.end("HTTP method not allowed");
-    return;
-  }
+  // if (req.url === "/delete" && req.method !== "DELETE") {
+  //   console.log("HTTP method not allowed");
+  //   res.writeHead(405);
+  //   res.end("HTTP method not allowed");
+  //   return;
+  // }
   // if (req.url === "/post" && req.method === "POST") {
   //   res.writeHead(200);
   //   res.end("Success!");
