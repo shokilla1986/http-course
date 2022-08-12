@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h3>Delete Page</h3>
+    <input type="text" placeholder="введите имя файла для удаления..."/>
+    <br />
+    <button>Удалить файл</button>
+    <br />
+    <p></p>
+
+    <script>
+        let input = document.querySelector('input');
+        let button = document.querySelector('button')
+         let p = document.querySelector('p')
+
+         let url = 'http://localhost:8000/delete';
+
+         function deleteHandler(event){
+           event.preventDefault();
+           let filename = input.value;
+           console.log(filename);
+           
+             
+            fetch(url, {
+                   method: 'DELETE',
+                   headers: {
+                       'Accept': 'application/json',
+                       'Content-Type': 'application/json'
+                   },
+                   body: JSON.stringify(filename)
+                  
+               })
+                .then(() => {
+                    p.innerHTML = 'removed';
+                }).catch(err => {
+                    console.error(err)
+                });
+           
+         }
+
+         button.addEventListener('click', deleteHandler)
+    </script>
+</body>
+</html>

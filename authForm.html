@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP-course</title>
+</head>
+
+<body>
+    <div>
+        <h2>Авторизация</h2>
+        <form action="#" method="post">
+            <input name="username" type="text" placeholder="введите username..." />
+            <input name="password" type="text" placeholder="введите пароль..." />
+          
+            <input type="submit" />
+        </form>
+        <p class="res_text"></p>
+       
+        <script>
+            let form = document.querySelector('form');     
+            let par = document.querySelector('.res_text') 
+            
+            let xhr = new XMLHttpRequest();
+            let url = 'http://localhost:8000/auth'
+
+            function handleSubmitForm(event){
+                event.preventDefault()
+                let username = form.username.value
+                let password = form.password.value;
+                let user = {
+                    username: username,
+                    password: password
+                }            
+                             
+                let json= JSON.stringify(user)
+                console.log(json);    
+                xhr.open("POST", url)
+                xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+
+                xhr.send(json)          
+                
+            };                        
+
+           
+
+            form.addEventListener('submit', handleSubmitForm)
+
+                    
+
+             xhr.onload = () => {
+                    if (xhr.status == 200) {                // если код ответа 200
+                        par.innerHTML = xhr.responseText;      // выводим полученный ответ на консоль браузера
+                    } else {                                // иначе выводим текст статуса
+                       par.innerHTML = xhr.responseText; 
+                    }
+                }
+        </script>
+    </div>
+</body>
+
+</html>
