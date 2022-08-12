@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>Post Page</h3>
+
+    <div>
+        <form action="#" method="post">
+            <input name="filename" type="content" placeholder="введите название файла..." />
+            <br />
+            <textarea name="text" type="textarea" placeholder="введите текст..."></textarea> />
+            <br />
+
+            <input type="submit" />
+        </form>
+        <p></p>
+    </div>
+
+    <script>
+        let form = document.querySelector('form');
+        let p = document.querySelector('p')
+
+        let url = 'http://localhost:8000/post'
+
+        async function handleSubmitFormPost(event) {
+            event.preventDefault()
+            let filename = form.filename.value
+            let text = form.content.value;
+            let user = {
+                filename: filename,
+                content: content
+            }
+
+            await fetch(url, {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                },            
+                body: JSON.stringify(user)
+            })  
+            .then(res => console.log(res.ok))          
+            .then(res =>{
+                p.innerHTML = "Ok"                   
+             })
+        };
+
+
+        form.addEventListener('submit', handleSubmitFormPost)
+    </script>
+</body>
+
+</html>
